@@ -18,7 +18,7 @@ public class Authentication {
 
         spec = new RequestSpecBuilder().setBaseUri(ConfigReader.getProperty("base_url")).build();
 
-        spec.pathParams("pp1","api","pp2","login");
+        spec.pathParams("pp1","api","pp2","getToken");
 
         JSONObject reqBody = new JSONObject();
 
@@ -28,7 +28,7 @@ public class Authentication {
         Response response = given()
                 .spec(spec)
                 .contentType(ContentType.JSON)
-                .header("Accept","application/json")
+              //  .header("Accept","application/json")
                 .when()
                 .body(reqBody.toString())
                 .post("/{pp1}/{pp2}");

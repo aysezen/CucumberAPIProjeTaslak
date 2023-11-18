@@ -8,6 +8,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.json.JSONObject;
 import utilities.ConfigReader;
+import utilities.ReusableMethods;
 
 import java.util.Arrays;
 
@@ -20,50 +21,18 @@ public class CommonAPI {
 
     JSONObject reqBody;
 
+    Response response;
+
     @Given("Api kullanicisi {string} path parametreleri set eder.")
     public void api_kullanicisi_path_parametreleri_set_eder(String rawPaths) {
 
-        // https://trendlifebuy.com/api/profile/allCountries
+        fullPath = ReusableMethods.pathParameters(rawPaths);
 
-        // spec.pathParams("pp1","api","pp2","profile","pp3","allCountries");
-
-        String [] paths = rawPaths.split("/"); // ["api","profile","allCountries"]
-
-        System.out.println(Arrays.toString(paths));
-       /*
-        spec.pathParam("pp1","api");
-        spec.pathParam("pp2","profile");
-        spec.pathParam("pp3","allCountries");
-        */
-
-        StringBuilder tempPath = new StringBuilder("/{");
-
-
-        for (int i = 0; i < paths.length; i++) {
-
-            String key = "pp" + i;
-            String value = paths[i].trim();
-
-            HooksAPI.spec.pathParam(key,value);
-
-            tempPath.append(key + "}/{");
-        }
-            tempPath.deleteCharAt(tempPath.lastIndexOf("{"));
-            tempPath.deleteCharAt(tempPath.lastIndexOf("/"));
-
-            fullPath = tempPath.toString();
-        System.out.println("fullPath = " + fullPath);
     }
     @Then("AllCountries icin Get request gonderilir.")
     public void all_countries_icin_get_request_gonderilir() {
 
-        Response response = given()
-                                .spec(spec)
-                                .contentType(ContentType.JSON)
-                                .header("Accept","application/json")
-                                .headers("Authorization","Bearer " + HooksAPI.token)
-                            .when()
-                                .get(fullPath);
+        response =ReusableMethods.getRequest(fullPath);
 
         response.prettyPrint();
 
